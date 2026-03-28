@@ -192,8 +192,9 @@ tbody tr:hover td{background:var(--bg2)}
 .img-upload:hover{background:var(--bg3)}
 .img-upload input{display:none}
 .thumb-preview{width:100%;height:120px;object-fit:cover;border-radius:var(--r8);border:.5px solid var(--border);display:block;margin-top:8px}
-.card-thumb{width:100%;height:110px;object-fit:cover;border-radius:6px 6px 0 0;display:block;margin:-11px -13px 10px;width:calc(100% + 26px)}
-.has-thumb{padding-top:0;overflow:hidden}
+.card-inner{display:flex;align-items:flex-start;gap:10px}
+.card-thumb{width:56px;height:56px;object-fit:cover;border-radius:6px;flex-shrink:0;border:.5px solid var(--border)}
+.card-main{flex:1;min-width:0}
 .thumb-del{font-size:10px;color:var(--red);cursor:pointer;margin-top:4px;display:inline-block}
 .flbl{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.04em}
 .fi,.fs,.fta{width:100%;padding:10px 12px;border:.5px solid var(--border2);border-radius:var(--r8);font-family:var(--font);font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color 120ms}
@@ -659,9 +660,22 @@ function chBadge(ch){return ch==='San Studio Busan'?'<span class="card-ch ch-san
 function fmtDate(ts){if(!ts)return'';try{return new Date(ts).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});}catch(e){return'';}}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function mkCard(d,i){
-  const thumb = d.image ? `<img src="${d.image}" class="card-thumb" loading="lazy">` : '';
-  const cls = d.image ? 'card has-thumb' : 'card';
-  return `<div class="${cls}" style="animation-delay:${i*20}ms" onclick="editItem('${d.id}')">${thumb}${chBadge(d.channel)}<div class="card-body">${esc(d.content)}</div><div class="card-foot"><span class="card-name">${esc(d.name)||'—'}</span><span class="card-ts">${fmtDate(d.timestamp)}</span><span class="badge ${d.status==='Đã đăng'?'bd':'bc'}">${d.status}</span></div></div>`;
+  const hasImg = d.image && d.image.length > 10;
+  const thumb = hasImg ? `<img src="${d.image}" class="card-thumb" loading="lazy">` : '';
+  return `<div class="card" style="animation-delay:${i*20}ms" onclick="editItem('${d.id}')">
+    <div class="card-inner">
+      ${thumb}
+      <div class="card-main">
+        ${chBadge(d.channel)}
+        <div class="card-body">${esc(d.content)}</div>
+        <div class="card-foot">
+          <span class="card-name">${esc(d.name)||'—'}</span>
+          <span class="card-ts">${fmtDate(d.timestamp)}</span>
+          <span class="badge ${d.status==='Đã đăng'?'bd':'bc'}">${d.status}</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function renderKanban(){
