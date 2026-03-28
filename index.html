@@ -410,7 +410,7 @@ tbody tr:hover td{background:var(--bg2)}
       <label class="flbl">Ảnh thumbnail</label>
       <div class="img-upload" onclick="document.getElementById('imgInput').click()" id="imgUploadArea">
         <input type="file" id="imgInput" accept="image/*" onchange="handleImage(this)">
-        <span id="imgLabel">📷 Chọn ảnh (tối đa 800KB)</span>
+        <span id="imgLabel">📷 Chọn ảnh (tối đa 5MB)</span>
       </div>
       <img id="imgPreview" class="thumb-preview" style="display:none">
       <span class="thumb-del" id="imgDel" onclick="clearImage()" style="display:none">✕ Xoá ảnh</span>
@@ -530,7 +530,7 @@ function formPost(payload) {
 function handleImage(input) {
   const file = input.files[0];
   if (!file) return;
-  if (file.size > 1.5 * 1024 * 1024) { toast('⚠️ Ảnh quá lớn — chọn ảnh dưới 1.5MB'); input.value=''; return; }
+  if (file.size > 5 * 1024 * 1024) { toast('⚠️ Ảnh quá lớn — chọn ảnh dưới 5MB'); input.value=''; return; }
   const reader = new FileReader();
   reader.onload = function(e) {
     const img = new Image();
@@ -557,7 +557,7 @@ function clearImage() {
   currentImage = '';
   document.getElementById('imgPreview').style.display = 'none';
   document.getElementById('imgDel').style.display = 'none';
-  document.getElementById('imgLabel').textContent = '📷 Chọn ảnh (tối đa 800KB)';
+  document.getElementById('imgLabel').textContent = '📷 Chọn ảnh (tối đa 5MB)';
   document.getElementById('imgInput').value = '';
 }
 function resetImageUI(existingImage) {
