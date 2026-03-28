@@ -188,6 +188,13 @@ tbody tr:hover td{background:var(--bg2)}
 .modal-title{font-size:15px;font-weight:600}
 .modal-x{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:2px 6px;border-radius:6px}
 .fg{margin-bottom:13px}
+.img-upload{width:100%;border:.5px dashed var(--border3);border-radius:var(--r8);padding:14px;text-align:center;cursor:pointer;transition:background 120ms;font-size:12px;color:var(--text3);background:var(--bg2)}
+.img-upload:hover{background:var(--bg3)}
+.img-upload input{display:none}
+.thumb-preview{width:100%;height:120px;object-fit:cover;border-radius:var(--r8);border:.5px solid var(--border);display:block;margin-top:8px}
+.card-thumb{width:100%;height:110px;object-fit:cover;border-radius:6px 6px 0 0;display:block;margin:-11px -13px 10px;width:calc(100% + 26px)}
+.has-thumb{padding-top:0;overflow:hidden}
+.thumb-del{font-size:10px;color:var(--red);cursor:pointer;margin-top:4px;display:inline-block}
 .flbl{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.04em}
 .fi,.fs,.fta{width:100%;padding:10px 12px;border:.5px solid var(--border2);border-radius:var(--r8);font-family:var(--font);font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color 120ms}
 .fi:focus,.fs:focus,.fta:focus{border-color:var(--green)}
@@ -398,6 +405,15 @@ tbody tr:hover td{background:var(--bg2)}
       <label class="flbl">Nội dung video</label>
       <textarea class="fta" id="fContent" placeholder="Mô tả ngắn về nội dung video..."></textarea>
     </div>
+    <div class="fg">
+      <label class="flbl">Ảnh thumbnail</label>
+      <div class="img-upload" onclick="document.getElementById('imgInput').click()" id="imgUploadArea">
+        <input type="file" id="imgInput" accept="image/*" onchange="handleImage(this)">
+        <span id="imgLabel">📷 Chọn ảnh (tối đa 800KB)</span>
+      </div>
+      <img id="imgPreview" class="thumb-preview" style="display:none">
+      <span class="thumb-del" id="imgDel" onclick="clearImage()" style="display:none">✕ Xoá ảnh</span>
+    </div>
     <div class="modal-foot">
       <button class="btn btn-danger btn-sm" id="delBtn" onclick="delItem()" style="display:none">🗑 Xoá</button>
       <div style="display:flex;gap:8px;margin-left:auto">
@@ -409,13 +425,14 @@ tbody tr:hover td{background:var(--bg2)}
 </div>
 
 <div class="toast" id="toast"></div>
+<iframe name="_pifr" style="display:none"></iframe>
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycby-W32vZQ5zLYSMdCJ4V4b3yrp7GMjVEZ2382fGGgZPWMBwdAl9R6I2wdqB62mq0e_7jQ/exec';
 const CACHE_KEY = 'cc_cache_v1';
 const THEME_KEY = 'cc_theme';
 
-let data=[], editId=null, activeCh='all', activeSt=new Set(), q='', view='kanban', saving=false, mobileSearchOpen=false;
+let data=[], editId=null, activeCh='all', activeSt=new Set(), q='', view='kanban', saving=false, mobileSearchOpen=false, currentImage='';
 
 const isMobile = () => window.innerWidth <= 640;
 
@@ -486,9 +503,72 @@ function jsonpGet(params){
   });
 }
 function jsonpWrite(payload){
+  // Nếu có ảnh (base64 dài) → POST form, rồi sync lại để confirm
+  // Nếu không có ảnh → GET JSONP như cũ
+  const hasImage = payload.image && payload.image.length > 100;
+  if (hasImage) {
+    return formPost(payload);
+  }
   const params={};
   for(const[k,v]of Object.entries(payload)){if(v!==undefined&&v!==null)params[k]=String(v);}
   return jsonpGet(params);
+}
+
+function formPost(payload) {
+  return new Promise(resolve => {
+    const f = document.createElement('form');
+    f.method = 'POST'; f.action = API; f.target = '_pifr'; f.style.display = 'none';
+    const inp = document.createElement('input');
+    inp.type = 'hidden'; inp.name = 'payload'; inp.value = JSON.stringify(payload);
+    f.appendChild(inp); document.body.appendChild(f); f.submit();
+    setTimeout(() => { f.remove(); resolve({ ok: true }); }, 2000);
+  });
+}
+
+// ── IMAGE ──
+function handleImage(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 1.5 * 1024 * 1024) { toast('⚠️ Ảnh quá lớn — chọn ảnh dưới 1.5MB'); input.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      // Compress to max 400x300
+      const canvas = document.createElement('canvas');
+      const maxW = 600, maxH = 400;
+      let w = img.width, h = img.height;
+      if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
+      if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      currentImage = canvas.toDataURL('image/jpeg', 0.72);
+      document.getElementById('imgPreview').src = currentImage;
+      document.getElementById('imgPreview').style.display = 'block';
+      document.getElementById('imgDel').style.display = 'inline-block';
+      document.getElementById('imgLabel').textContent = '✅ Đã chọn ảnh';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function clearImage() {
+  currentImage = '';
+  document.getElementById('imgPreview').style.display = 'none';
+  document.getElementById('imgDel').style.display = 'none';
+  document.getElementById('imgLabel').textContent = '📷 Chọn ảnh (tối đa 800KB)';
+  document.getElementById('imgInput').value = '';
+}
+function resetImageUI(existingImage) {
+  currentImage = existingImage || '';
+  if (currentImage) {
+    document.getElementById('imgPreview').src = currentImage;
+    document.getElementById('imgPreview').style.display = 'block';
+    document.getElementById('imgDel').style.display = 'inline-block';
+    document.getElementById('imgLabel').textContent = '✅ Có ảnh — click để thay';
+  } else {
+    clearImage();
+  }
 }
 
 // ── SYNC ──
@@ -530,6 +610,7 @@ async function saveItem(){
       channel:document.getElementById('fCh').value,
       content:content,
       status: document.getElementById('fSt').value,
+      image:  currentImage,
     });
     if(res&&res.error)throw new Error(res.error);
     toast(editId?'✅ Đã cập nhật!':'✅ Đã thêm video mới!');
@@ -552,7 +633,11 @@ async function delItem(){
 
 // ── RENDER ──
 function getFiltered(){
-  return data.filter(d=>
+  return [...data].sort((a,b)=>{
+    const ta=a.timestamp?new Date(a.timestamp).getTime():0;
+    const tb=b.timestamp?new Date(b.timestamp).getTime():0;
+    return tb-ta;
+  }).filter(d=>
     (activeCh==='all'||d.channel===activeCh)&&
     (activeSt.size===0||activeSt.has(d.status))&&
     (!q||d.content.toLowerCase().includes(q)||d.name.toLowerCase().includes(q))
@@ -573,7 +658,11 @@ function renderStats(rows){
 function chBadge(ch){return ch==='San Studio Busan'?'<span class="card-ch ch-san">📸 San Studio</span>':'<span class="card-ch ch-ss">👘 Ssanghy</span>';}
 function fmtDate(ts){if(!ts)return'';try{return new Date(ts).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});}catch(e){return'';}}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function mkCard(d,i){return`<div class="card" style="animation-delay:${i*20}ms" onclick="editItem('${d.id}')">${chBadge(d.channel)}<div class="card-body">${esc(d.content)}</div><div class="card-foot"><span class="card-name">${esc(d.name)||'—'}</span><span class="card-ts">${fmtDate(d.timestamp)}</span><span class="badge ${d.status==='Đã đăng'?'bd':'bc'}">${d.status}</span></div></div>`;}
+function mkCard(d,i){
+  const thumb = d.image ? `<img src="${d.image}" class="card-thumb" loading="lazy">` : '';
+  const cls = d.image ? 'card has-thumb' : 'card';
+  return `<div class="${cls}" style="animation-delay:${i*20}ms" onclick="editItem('${d.id}')">${thumb}${chBadge(d.channel)}<div class="card-body">${esc(d.content)}</div><div class="card-foot"><span class="card-name">${esc(d.name)||'—'}</span><span class="card-ts">${fmtDate(d.timestamp)}</span><span class="badge ${d.status==='Đã đăng'?'bd':'bc'}">${d.status}</span></div></div>`;
+}
 
 function renderKanban(){
   const f=getFiltered(),dang=f.filter(d=>d.status==='Đã đăng'),chua=f.filter(d=>d.status==='Chưa đăng');
@@ -594,6 +683,7 @@ function openModal(){
   document.getElementById('fCh').value='San Studio Busan';
   document.getElementById('fSt').value='Chưa đăng';
   document.getElementById('delBtn').style.display='none';
+  resetImageUI('');
   showOverlay();
   setTimeout(()=>document.getElementById('fContent').focus(),350);
 }
@@ -606,6 +696,7 @@ function editItem(id){
   document.getElementById('fCh').value=d.channel;
   document.getElementById('fSt').value=d.status;
   document.getElementById('delBtn').style.display='inline-flex';
+  resetImageUI(d.image||'');
   showOverlay();
 }
 function showOverlay(){const o=document.getElementById('overlay');o.classList.add('open');requestAnimationFrame(()=>o.classList.add('show'));}
