@@ -2,63 +2,103 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Content Calendar — San Studio & Ssanghy</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Content Calendar</title>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --green:#396B14;--green-hover:#2E5610;--green-tint:#EBF3E4;--green-mid:#448650;
-  --red:#CC3333;--red-tint:#FAECEC;--amber:#A0720A;--amber-bg:#FEF7E6;
+  --green:#396B14;--green-hover:#2E5610;--green-tint:#EBF3E4;
+  --red:#CC3333;--red-tint:#FAECEC;--amber:#A0720A;
   --bg:#fff;--bg2:#F6F9F3;--bg3:#EEF4E8;--bg4:#e6f0dc;
   --text:#1C2B12;--text2:#5A6B4E;--text3:#9AAA8A;--text4:#c0d0b0;
   --border:rgba(57,107,20,0.12);--border2:rgba(57,107,20,0.22);--border3:rgba(57,107,20,0.38);
-  --sh:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+  --sh:0 1px 3px rgba(0,0,0,0.06);
   --font:'Be Vietnam Pro',system-ui,sans-serif;
-  --r4:4px;--r8:8px;--r12:12px;--r16:16px;
+  --r8:8px;--r12:12px;--r16:16px;
   --ease:cubic-bezier(0.16,1,0.3,1);
+  --bottom-nav:60px;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
 }
 [data-theme=dark]{
   --bg:#111A0A;--bg2:#192410;--bg3:#223015;--bg4:#2a3d1a;
   --text:#E8F2E0;--text2:#8FAD78;--text3:#5A7248;--text4:#3d5230;
   --border:rgba(107,168,60,0.15);--border2:rgba(107,168,60,0.25);--border3:rgba(107,168,60,0.4);
   --green:#5aaa20;--green-hover:#6bc428;--green-tint:#1E3010;
-  --red:#E04444;--red-tint:#2E1010;--amber:#d4980f;--amber-bg:#2a2000;
+  --red:#E04444;--red-tint:#2E1010;
 }
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;transition:background .2s,color .2s}
 
-/* topbar */
-.topbar{height:52px;background:var(--bg);border-bottom:.5px solid var(--border2);display:flex;align-items:center;padding:0 20px;gap:10px;position:sticky;top:0;z-index:20;transition:background .2s}
+/* ── TOPBAR (desktop) ── */
+.topbar{height:52px;background:var(--bg);border-bottom:.5px solid var(--border2);display:flex;align-items:center;padding:0 20px;gap:10px;position:sticky;top:0;z-index:20}
 .brand{font-size:15px;font-weight:600;color:var(--green);flex:1;white-space:nowrap;letter-spacing:-.01em}
 .brand small{color:var(--text3);font-weight:400;font-size:11px;margin-left:6px}
+.topbar-actions{display:flex;align-items:center;gap:8px}
 
-/* buttons */
+/* ── BOTTOM NAV (mobile only) ── */
+.bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  height:calc(var(--bottom-nav) + var(--safe-bottom));
+  padding-bottom:var(--safe-bottom);
+  background:var(--bg);border-top:.5px solid var(--border2);
+  z-index:30;
+  display:none;
+  align-items:stretch;
+}
+.bnav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;border:none;background:none;cursor:pointer;
+  color:var(--text3);font-family:var(--font);font-size:10px;font-weight:500;
+  padding:8px 4px;transition:color 120ms;
+}
+.bnav-item.active{color:var(--green)}
+.bnav-item.add-btn{
+  color:#fff;background:var(--green);border-radius:var(--r12);
+  margin:8px 6px;flex:1.2;font-size:11px;font-weight:600;
+}
+.bnav-icon{font-size:20px;line-height:1}
+
+/* FAB — mobile add button (shown separately) */
+.fab{
+  display:none;
+  position:fixed;bottom:calc(var(--bottom-nav) + var(--safe-bottom) + 12px);right:16px;
+  width:52px;height:52px;border-radius:50%;
+  background:var(--green);color:#fff;border:none;
+  font-size:26px;cursor:pointer;z-index:25;
+  box-shadow:0 4px 16px rgba(57,107,20,0.4);
+  align-items:center;justify-content:center;
+  transition:transform 120ms,background 120ms;
+}
+.fab:active{transform:scale(.93);background:var(--green-hover)}
+
+/* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:var(--r8);border:.5px solid var(--border2);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 120ms;background:var(--bg);color:var(--text2);white-space:nowrap}
 .btn:hover{background:var(--bg3)}
 .btn-primary{background:var(--green);color:#fff;border-color:transparent}
 .btn-primary:hover{background:var(--green-hover)}
 .btn-sm{padding:4px 9px;font-size:11px}
 .btn-danger{background:var(--red-tint);color:var(--red);border-color:transparent}
+.theme-btn{background:none;border:.5px solid var(--border2);border-radius:var(--r8);padding:5px 8px;cursor:pointer;font-size:14px;transition:background 120ms}
+.theme-btn:hover{background:var(--bg3)}
 
-/* tabs */
+/* ── TABS ── */
 .tabs{display:flex;gap:2px;background:var(--bg3);border-radius:var(--r8);padding:3px}
 .tab{padding:5px 11px;border-radius:6px;border:none;background:none;font-family:var(--font);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;transition:all 120ms}
 .tab.active{background:var(--bg);color:var(--green);box-shadow:var(--sh)}
 
-/* search */
+/* ── SEARCH ── */
 .search{position:relative}
-.search input{padding:6px 10px 6px 28px;width:190px;border:.5px solid var(--border2);border-radius:var(--r8);font-family:var(--font);font-size:12px;background:var(--bg);color:var(--text);outline:none;transition:border-color 120ms,width 200ms}
-.search input:focus{border-color:var(--green);width:230px}
+.search input{padding:6px 10px 6px 28px;width:180px;border:.5px solid var(--border2);border-radius:var(--r8);font-family:var(--font);font-size:12px;background:var(--bg);color:var(--text);outline:none;transition:border-color 120ms,width 200ms}
+.search input:focus{border-color:var(--green);width:220px}
 .search-ico{position:absolute;left:8px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:12px;pointer-events:none}
 
-/* theme btn */
-.theme-btn{background:none;border:.5px solid var(--border2);border-radius:var(--r8);padding:5px 8px;cursor:pointer;font-size:14px;transition:background 120ms}
-.theme-btn:hover{background:var(--bg3)}
-
-/* content */
+/* ── CONTENT ── */
 .content{padding:16px 20px;max-width:1280px;margin:0 auto}
 
-/* stats */
+/* ── STATS ── */
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
 .stat{background:var(--bg2);border-radius:var(--r12);padding:12px 14px;border:.5px solid var(--border)}
 .stat-label{font-size:10px;color:var(--text3);font-weight:500;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
@@ -67,36 +107,35 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .prog{height:3px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-top:5px}
 .prog-fill{height:100%;background:var(--green);border-radius:99px;transition:width .6s var(--ease)}
 
-/* sync bar */
+/* ── SYNC BAR ── */
 .sync-bar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--bg2);border-radius:var(--r8);border:.5px solid var(--border);margin-bottom:14px;font-size:12px;color:var(--text2)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0;transition:background .3s}
 .dot.syncing{background:var(--amber);animation:pulse 1s infinite}
-.dot.err{background:var(--red);animation:none}
+.dot.err{background:var(--red)}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 .sync-time{margin-left:auto;font-size:11px;color:var(--text3)}
 
-/* filters */
+/* ── FILTERS ── */
 .filters{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .flabel{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.07em}
 .chip{padding:5px 11px;border-radius:99px;border:.5px solid var(--border2);font-size:11px;font-weight:500;cursor:pointer;background:var(--bg);color:var(--text2);transition:all 120ms;font-family:var(--font)}
-.chip:hover{background:var(--bg3)}
 .chip.on{background:var(--green-tint);color:var(--green);border-color:var(--border3)}
 .chip.san.on{background:#fff3e8;color:#b05510;border-color:rgba(176,85,16,.3)}
 .chip.ss.on{background:var(--red-tint);color:var(--red);border-color:rgba(204,51,51,.3)}
 [data-theme=dark] .chip.san.on{background:#2a1800;color:#e07820}
 
-/* kanban */
+/* ── KANBAN ── */
 .kanban{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.col{background:var(--bg2);border-radius:var(--r12);padding:12px;min-height:240px;border:.5px solid var(--border)}
+.col{background:var(--bg2);border-radius:var(--r12);padding:12px;min-height:200px;border:.5px solid var(--border)}
 .col-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .col-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3)}
 .col-n{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--bg3);color:var(--text3)}
 .col-n.d{background:var(--green-tint);color:var(--green)}
 .col-n.c{background:var(--red-tint);color:var(--red)}
 
-/* card */
+/* ── CARD ── */
 .card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r8);padding:11px 13px;margin-bottom:8px;cursor:pointer;transition:border-color 120ms,transform 120ms,box-shadow 120ms;animation:fadeUp 220ms var(--ease) both}
-.card:hover{border-color:var(--border3);transform:translateY(-1px);box-shadow:var(--sh)}
+.card:active{transform:scale(.98)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 .card-ch{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;margin-bottom:7px;text-transform:uppercase;letter-spacing:.03em}
 .ch-san{background:#fff3e8;color:#b05510}
@@ -106,13 +145,11 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .card-foot{display:flex;align-items:center;gap:8px}
 .card-name{font-size:11px;color:var(--text3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .card-ts{font-size:10px;color:var(--text4);white-space:nowrap}
-
-/* badge */
 .badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;white-space:nowrap}
 .bd{background:var(--green-tint);color:var(--green)}
 .bc{background:var(--red-tint);color:var(--red)}
 
-/* list */
+/* ── LIST ── */
 .list-wrap{overflow-x:auto;border-radius:var(--r12);border:.5px solid var(--border)}
 table{width:100%;border-collapse:collapse;font-size:13px;background:var(--bg)}
 thead th{text-align:left;font-weight:500;font-size:10px;color:var(--text3);padding:9px 13px;border-bottom:.5px solid var(--border2);text-transform:uppercase;letter-spacing:.06em;background:var(--bg2);white-space:nowrap}
@@ -120,72 +157,138 @@ tbody td{padding:10px 13px;border-bottom:.5px solid var(--border);color:var(--te
 tbody tr:last-child td{border-bottom:none}
 tbody tr:hover td{background:var(--bg2)}
 
-/* modal */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;z-index:100;opacity:0;transition:opacity .18s}
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:flex-end;justify-content:center;z-index:100;opacity:0;transition:opacity .18s}
 .overlay.open{display:flex}
 .overlay.show{opacity:1}
-.modal{background:var(--bg);border-radius:var(--r16);padding:24px;width:min(460px,92vw);box-shadow:0 8px 32px rgba(0,0,0,.14);border:.5px solid var(--border2);transform:translateY(12px) scale(.98);transition:transform .28s var(--ease)}
-.overlay.show .modal{transform:translateY(0) scale(1)}
+.modal{
+  background:var(--bg);width:100%;max-width:500px;
+  border-radius:var(--r16) var(--r16) 0 0;
+  padding:20px 20px calc(20px + var(--safe-bottom));
+  box-shadow:0 -4px 32px rgba(0,0,0,.14);
+  border:.5px solid var(--border2);
+  transform:translateY(100%);
+  transition:transform .3s var(--ease);
+  max-height:90vh;overflow-y:auto;
+}
+.overlay.show .modal{transform:translateY(0)}
+/* drag handle */
+.modal-handle{width:36px;height:4px;background:var(--bg3);border-radius:99px;margin:0 auto 16px}
 .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
 .modal-title{font-size:15px;font-weight:600}
-.modal-x{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:2px 6px;border-radius:var(--r4);transition:background 120ms;line-height:1}
-.modal-x:hover{background:var(--bg3)}
+.modal-x{background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:2px 6px;border-radius:6px}
 .fg{margin-bottom:13px}
 .flbl{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.04em}
-.fi,.fs,.fta{width:100%;padding:8px 11px;border:.5px solid var(--border2);border-radius:var(--r8);font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg);outline:none;transition:border-color 120ms}
+.fi,.fs,.fta{width:100%;padding:10px 12px;border:.5px solid var(--border2);border-radius:var(--r8);font-family:var(--font);font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color 120ms}
 .fi:focus,.fs:focus,.fta:focus{border-color:var(--green)}
-.fta{resize:vertical;min-height:70px;line-height:1.5}
+.fta{resize:vertical;min-height:80px;line-height:1.5}
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .modal-foot{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:.5px solid var(--border)}
+.btn-save-full{width:100%;padding:13px;font-size:14px;border-radius:var(--r12);justify-content:center}
 
-/* empty */
+/* ── EMPTY ── */
 .empty{text-align:center;padding:36px 16px;color:var(--text4);font-size:12px}
 
-/* toast */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(8px);background:#1C2B12;color:#EBF3E4;padding:9px 18px;border-radius:99px;font-size:12px;font-weight:500;z-index:200;opacity:0;pointer-events:none;transition:all .22s var(--ease);white-space:nowrap}
+/* ── TOAST ── */
+.toast{position:fixed;bottom:calc(var(--bottom-nav) + var(--safe-bottom) + 12px);left:50%;transform:translateX(-50%) translateY(8px);background:#1C2B12;color:#EBF3E4;padding:9px 18px;border-radius:99px;font-size:12px;font-weight:500;z-index:200;opacity:0;pointer-events:none;transition:all .22s var(--ease);white-space:nowrap}
 [data-theme=dark] .toast{background:#EBF3E4;color:#1C2B12}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* skeleton */
+/* ── SKELETON ── */
 .skel{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg2) 50%,var(--bg3) 75%);background-size:200% 100%;border-radius:var(--r8);animation:shimmer 1.4s linear infinite}
 @keyframes shimmer{to{background-position:-200% 0}}
 
+/* ── DESKTOP ── */
+@media(min-width:641px){
+  .bottom-nav{display:none !important}
+  .fab{display:none !important}
+  .modal{border-radius:var(--r16);max-width:460px;padding:24px;margin:auto;transform:translateY(12px) scale(.98)}
+  .overlay{align-items:center}
+  .overlay.show .modal{transform:translateY(0) scale(1)}
+  .modal-handle{display:none}
+  .toast{bottom:20px}
+}
+
+/* ── MOBILE ── */
 @media(max-width:640px){
-  .stats{grid-template-columns:1fr 1fr}
-  .kanban{grid-template-columns:1fr}
+  /* hide desktop controls */
+  .topbar .tabs{display:none}
+  .topbar .search{display:none}
+  .topbar-actions{display:none}
+
+  /* topbar slim */
+  .topbar{height:48px;padding:0 16px}
+  .brand{font-size:14px}
   .brand small{display:none}
-  .search input{width:130px}
+
+  /* show bottom nav + fab */
+  .bottom-nav{display:flex !important}
+  .fab{display:flex !important}
+
+  /* content padding bottom for nav */
+  .content{
+    padding:12px 14px;
+    padding-bottom:calc(var(--bottom-nav) + var(--safe-bottom) + 70px);
+  }
+
+  /* stats 2 col */
+  .stats{grid-template-columns:1fr 1fr;gap:8px}
+  .stat{padding:10px 12px}
+  .stat-val{font-size:20px}
+
+  /* kanban single col */
+  .kanban{grid-template-columns:1fr}
+
+  /* sync bar compact */
+  .sync-bar{padding:7px 12px;font-size:11px}
+
+  /* filters scroll horizontal */
+  .filters{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px;gap:6px}
+  .filters::-webkit-scrollbar{display:none}
+  .flabel{flex-shrink:0}
+  .chip{flex-shrink:0}
+  .filters > div{flex-shrink:0;display:flex;gap:6px}
+
+  /* modal full bottom sheet */
+  .modal-handle{display:block}
 }
 </style>
 </head>
 <body>
 
+<!-- ── TOPBAR ── -->
 <div class="topbar">
   <div class="brand">📋 Content Calendar <small>TikTok · San Studio & Ssanghy</small></div>
+  <!-- desktop only -->
   <div class="tabs">
     <button class="tab active" onclick="switchTab('kanban',this)">Kanban</button>
     <button class="tab" onclick="switchTab('list',this)">Danh sách</button>
   </div>
   <div class="search">
     <span class="search-ico">🔍</span>
-    <input type="text" placeholder="Tìm video..." oninput="onSearch(this.value)">
+    <input type="text" placeholder="Tìm video..." oninput="onSearch(this.value)" id="searchDesk">
   </div>
-  <button class="btn" onclick="syncData()" id="syncBtn">↻ Sync</button>
-  <button class="btn btn-primary" onclick="openModal()">+ Thêm</button>
-  <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  <div class="topbar-actions">
+    <button class="btn" onclick="syncData()" id="syncBtn">↻ Sync</button>
+    <button class="btn btn-primary" onclick="openModal()">+ Thêm</button>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+  <!-- mobile theme btn stays in topbar -->
+  <button class="theme-btn" onclick="toggleTheme()" id="themeBtnMob" style="display:none">🌙</button>
 </div>
 
+<!-- ── CONTENT ── -->
 <div class="content">
   <div class="stats" id="stats">
-    <div class="stat"><div class="skel" style="height:12px;width:60%;margin-bottom:8px"></div><div class="skel" style="height:26px;width:40%"></div></div>
-    <div class="stat"><div class="skel" style="height:12px;width:60%;margin-bottom:8px"></div><div class="skel" style="height:26px;width:40%"></div></div>
-    <div class="stat"><div class="skel" style="height:12px;width:60%;margin-bottom:8px"></div><div class="skel" style="height:26px;width:40%"></div></div>
-    <div class="stat"><div class="skel" style="height:12px;width:60%;margin-bottom:8px"></div><div class="skel" style="height:26px;width:40%"></div></div>
+    <div class="stat"><div class="skel" style="height:11px;width:55%;margin-bottom:8px"></div><div class="skel" style="height:24px;width:38%"></div></div>
+    <div class="stat"><div class="skel" style="height:11px;width:55%;margin-bottom:8px"></div><div class="skel" style="height:24px;width:38%"></div></div>
+    <div class="stat"><div class="skel" style="height:11px;width:55%;margin-bottom:8px"></div><div class="skel" style="height:24px;width:38%"></div></div>
+    <div class="stat"><div class="skel" style="height:11px;width:55%;margin-bottom:8px"></div><div class="skel" style="height:24px;width:38%"></div></div>
   </div>
 
   <div class="sync-bar">
     <div class="dot syncing" id="dot"></div>
-    <span id="syncMsg">Đang kết nối Google Sheets...</span>
+    <span id="syncMsg">Đang kết nối...</span>
     <span class="sync-time" id="syncTime"></span>
   </div>
 
@@ -193,20 +296,49 @@ tbody tr:hover td{background:var(--bg2)}
     <span class="flabel">Kênh</span>
     <button class="chip on"  onclick="setCh('all',this)">Tất cả</button>
     <button class="chip san" onclick="setCh('San Studio Busan',this)">📸 San Studio</button>
-    <button class="chip ss"  onclick="setCh('Ssanghy hanbok',this)">👘 Ssanghy Hanbok</button>
-    <div style="margin-left:auto;display:flex;gap:6px">
+    <button class="chip ss"  onclick="setCh('Ssanghy hanbok',this)">👘 Ssanghy</button>
+    <div style="display:flex;gap:6px">
       <button class="chip" onclick="toggleSt('Đã đăng',this)">✅ Đã đăng</button>
       <button class="chip" onclick="toggleSt('Chưa đăng',this)">⏳ Chưa đăng</button>
     </div>
+  </div>
+
+  <!-- mobile search bar -->
+  <div class="search" style="display:none;margin-bottom:12px;width:100%" id="mobileSearchWrap">
+    <span class="search-ico">🔍</span>
+    <input type="text" placeholder="Tìm video..." oninput="onSearch(this.value)" id="searchMob" style="width:100%">
   </div>
 
   <div id="kanban" class="kanban"></div>
   <div id="listV" style="display:none"></div>
 </div>
 
-<!-- modal -->
+<!-- ── FAB (mobile) ── -->
+<button class="fab" onclick="openModal()" id="fab">+</button>
+
+<!-- ── BOTTOM NAV (mobile) ── -->
+<nav class="bottom-nav" id="bottomNav">
+  <button class="bnav-item active" id="bn-kanban" onclick="mobileTab('kanban')">
+    <span class="bnav-icon">▦</span>Kanban
+  </button>
+  <button class="bnav-item" id="bn-list" onclick="mobileTab('list')">
+    <span class="bnav-icon">☰</span>Danh sách
+  </button>
+  <button class="bnav-item" id="bn-search" onclick="mobileToggleSearch()">
+    <span class="bnav-icon">🔍</span>Tìm
+  </button>
+  <button class="bnav-item" onclick="syncData()" id="syncBtnMob">
+    <span class="bnav-icon">↻</span>Sync
+  </button>
+  <button class="bnav-item" onclick="toggleTheme()" id="themeBtnNav">
+    <span class="bnav-icon" id="themeIconNav">🌙</span>Theme
+  </button>
+</nav>
+
+<!-- ── MODAL ── -->
 <div class="overlay" id="overlay">
   <div class="modal">
+    <div class="modal-handle"></div>
     <div class="modal-head">
       <div class="modal-title" id="modalTitle">Thêm nội dung mới</div>
       <button class="modal-x" onclick="closeModal()">✕</button>
@@ -246,340 +378,222 @@ tbody tr:hover td{background:var(--bg2)}
 </div>
 
 <div class="toast" id="toast"></div>
-<iframe name="_ifr" style="display:none"></iframe>
 
 <script>
-// ── CONFIG ──
 const API = 'https://script.google.com/macros/s/AKfycby-W32vZQ5zLYSMdCJ4V4b3yrp7GMjVEZ2382fGGgZPWMBwdAl9R6I2wdqB62mq0e_7jQ/exec';
 const CACHE_KEY = 'cc_cache_v1';
 const THEME_KEY = 'cc_theme';
 
-let data = [], editId = null, activeCh = 'all', activeSt = new Set(), q = '', view = 'kanban', saving = false;
+let data=[], editId=null, activeCh='all', activeSt=new Set(), q='', view='kanban', saving=false, mobileSearchOpen=false;
 
-// ── INIT ──
+const isMobile = () => window.innerWidth <= 640;
+
 window.onload = function() {
-  try {
-    const t = localStorage.getItem(THEME_KEY) || 'light';
-    applyTheme(t);
-  } catch(e) {}
-
-  // Render UI ngay với data rỗng — tránh màn hình trắng
+  try { applyTheme(localStorage.getItem(THEME_KEY)||'light'); } catch(e){}
+  setupMobileUI();
   renderAll([]);
-  setSyncStatus('syncing', 'Đang kết nối Google Sheets...');
-
-  // Load cache
+  setSyncStatus('syncing','Đang kết nối...');
   try {
     const c = localStorage.getItem(CACHE_KEY);
-    if (c) {
-      const parsed = JSON.parse(c);
-      if (parsed && parsed.rows) {
-        data = parsed.rows;
-        renderAll(data);
-        setSyncStatus('ok', 'Đã load cache · đang sync mới...');
-      }
-    }
-  } catch(e) {}
-
-  // Sync từ Sheets
+    if(c){ const p=JSON.parse(c); if(p&&p.rows){data=p.rows;renderAll(data);setSyncStatus('ok','Cache · sync đang tải...');}}
+  } catch(e){}
   syncData();
-
-  document.getElementById('overlay').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  document.getElementById('overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+  window.addEventListener('resize', setupMobileUI);
 };
 
+function setupMobileUI(){
+  const mob = isMobile();
+  // show/hide mobile-only elements
+  document.getElementById('themeBtnMob').style.display = mob ? 'block' : 'none';
+  document.getElementById('mobileSearchWrap').style.display = (mob && mobileSearchOpen) ? 'flex' : 'none';
+}
+
 // ── THEME ──
-function applyTheme(t) {
-  document.documentElement.setAttribute('data-theme', t);
-  document.getElementById('themeBtn').textContent = t === 'dark' ? '☀️' : '🌙';
-  try { localStorage.setItem(THEME_KEY, t); } catch(e) {}
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  const icon = t==='dark'?'☀️':'🌙';
+  document.getElementById('themeBtn').textContent = icon;
+  document.getElementById('themeBtnMob').textContent = icon;
+  document.getElementById('themeIconNav').textContent = icon;
+  try{localStorage.setItem(THEME_KEY,t);}catch(e){}
 }
-function toggleTheme() {
-  applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+function toggleTheme(){applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');}
+
+// ── MOBILE NAV ──
+function mobileTab(v){
+  view=v;
+  document.getElementById('bn-kanban').classList.toggle('active',v==='kanban');
+  document.getElementById('bn-list').classList.toggle('active',v==='list');
+  document.getElementById('kanban').style.display = v==='kanban'?'grid':'none';
+  document.getElementById('listV').style.display  = v==='list'?'block':'none';
+  renderAll(data);
+}
+function mobileToggleSearch(){
+  mobileSearchOpen = !mobileSearchOpen;
+  document.getElementById('bn-search').classList.toggle('active', mobileSearchOpen);
+  const wrap = document.getElementById('mobileSearchWrap');
+  wrap.style.display = mobileSearchOpen ? 'flex' : 'none';
+  if(mobileSearchOpen) document.getElementById('searchMob').focus();
+  else { document.getElementById('searchMob').value=''; onSearch(''); }
 }
 
-// ── JSONP GET ──
-function jsonpGet(params) {
-  return new Promise((resolve, reject) => {
-    const cb = 'jcb_' + Date.now() + '_' + Math.random().toString(36).slice(2,7);
-    let done = false;
-
-    const timer = setTimeout(() => {
-      if (done) return;
-      done = true;
-      cleanup();
-      reject(new Error('Timeout 15s — Apps Script không phản hồi'));
-    }, 15000);
-
-    window[cb] = function(d) {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      cleanup();
-      resolve(d);
-    };
-
-    function cleanup() {
-      delete window[cb];
-      const s = document.getElementById(cb);
-      if (s) s.remove();
-    }
-
-    const qs = Object.entries({...params, callback: cb, _: Date.now()})
-      .map(([k,v]) => k + '=' + encodeURIComponent(v)).join('&');
-
-    const s = document.createElement('script');
-    s.id  = cb;
-    s.src = API + '?' + qs;
-    s.onerror = () => {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      cleanup();
-      reject(new Error('Không tải được script — kiểm tra URL Apps Script'));
-    };
+// ── JSONP ──
+function jsonpGet(params){
+  return new Promise((resolve,reject)=>{
+    const cb='jcb_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+    let done=false;
+    const timer=setTimeout(()=>{if(done)return;done=true;cleanup();reject(new Error('Timeout 15s'));},15000);
+    window[cb]=function(d){if(done)return;done=true;clearTimeout(timer);cleanup();resolve(d);};
+    function cleanup(){delete window[cb];const s=document.getElementById(cb);if(s)s.remove();}
+    const qs=Object.entries({...params,callback:cb,_:Date.now()}).map(([k,v])=>k+'='+encodeURIComponent(v)).join('&');
+    const s=document.createElement('script');
+    s.id=cb;s.src=API+'?'+qs;
+    s.onerror=()=>{if(done)return;done=true;clearTimeout(timer);cleanup();reject(new Error('Không load được script'));};
     document.head.appendChild(s);
   });
 }
-
-// ── FORM POST (fire & forget, no CORS) ──
-function jsonpWrite(payload) {
-  const params = {};
-  for (const [k, v] of Object.entries(payload)) {
-    if (v !== undefined && v !== null) params[k] = String(v);
-  }
+function jsonpWrite(payload){
+  const params={};
+  for(const[k,v]of Object.entries(payload)){if(v!==undefined&&v!==null)params[k]=String(v);}
   return jsonpGet(params);
 }
 
 // ── SYNC ──
-async function syncData() {
-  const btn = document.getElementById('syncBtn');
-  btn.disabled = true;
-  btn.textContent = '↻ Syncing...';
-  setSyncStatus('syncing', 'Đang kết nối Google Sheets...');
-
-  try {
-    const res = await jsonpGet({ action: 'getData' });
-    if (res.error) throw new Error(res.error);
-
-    data = res.rows || [];
-    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ rows: data })); } catch(e) {}
-
+async function syncData(){
+  ['syncBtn','syncBtnMob'].forEach(id=>{const b=document.getElementById(id);if(b){b.disabled=true;}});
+  document.getElementById('syncBtnMob').querySelector('.bnav-icon').textContent='⏳';
+  setSyncStatus('syncing','Đang kết nối...');
+  try{
+    const res=await jsonpGet({action:'getData'});
+    if(res.error)throw new Error(res.error);
+    data=res.rows||[];
+    try{localStorage.setItem(CACHE_KEY,JSON.stringify({rows:data}));}catch(e){}
     renderAll(data);
-    setSyncStatus('ok', 'Đã sync · ' + data.length + ' video');
-    toast('✅ Đã tải ' + data.length + ' video từ Google Sheets');
-
-  } catch(err) {
-    setSyncStatus('err', 'Lỗi: ' + err.message);
-    toast('❌ ' + err.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '↻ Sync';
+    setSyncStatus('ok','Đã sync · '+data.length+' video');
+    toast('✅ Đã tải '+data.length+' video');
+  }catch(err){
+    setSyncStatus('err','Lỗi: '+err.message);
+    toast('❌ '+err.message);
+  }finally{
+    ['syncBtn','syncBtnMob'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=false;});
+    document.getElementById('syncBtnMob').querySelector('.bnav-icon').textContent='↻';
   }
 }
 
 // ── SAVE ──
-async function saveItem() {
-  if (saving) return;
-  const content = document.getElementById('fContent').value.trim();
-  if (!content) { toast('⚠️ Vui lòng nhập nội dung video'); return; }
-
-  saving = true;
-  const sb = document.getElementById('saveBtn');
-  sb.textContent = 'Đang lưu...';
-  sb.disabled = true;
+async function saveItem(){
+  if(saving)return;
+  const content=document.getElementById('fContent').value.trim();
+  if(!content){toast('⚠️ Vui lòng nhập nội dung video');return;}
+  saving=true;
+  const sb=document.getElementById('saveBtn');
+  sb.textContent='Đang lưu...';sb.disabled=true;
   toast('⏳ Đang ghi vào Google Sheets...');
-
-  try {
-    const res = await jsonpWrite({
-      action:  editId ? 'update' : 'add',
-      id:      editId,
-      name:    document.getElementById('fName').value.trim(),
-      channel: document.getElementById('fCh').value,
-      content: content,
-      status:  document.getElementById('fSt').value,
+  try{
+    const res=await jsonpWrite({
+      action: editId?'update':'add',
+      id:     editId,
+      name:   document.getElementById('fName').value.trim(),
+      channel:document.getElementById('fCh').value,
+      content:content,
+      status: document.getElementById('fSt').value,
     });
-    if (res && res.error) throw new Error(res.error);
-    toast(editId ? '✅ Đã cập nhật!' : '✅ Đã thêm video mới!');
+    if(res&&res.error)throw new Error(res.error);
+    toast(editId?'✅ Đã cập nhật!':'✅ Đã thêm video mới!');
     closeModal();
     await syncData();
-  } catch(err) {
-    toast('❌ ' + err.message);
-  } finally {
-    saving = false;
-    sb.textContent = 'Lưu';
-    sb.disabled = false;
-  }
+  }catch(err){toast('❌ '+err.message);}
+  finally{saving=false;sb.textContent='Lưu';sb.disabled=false;}
 }
 
 // ── DELETE ──
-async function delItem() {
-  if (!editId || !confirm('Xoá video này?')) return;
+async function delItem(){
+  if(!editId||!confirm('Xoá video này?'))return;
   toast('⏳ Đang xoá...');
-  const dr = await jsonpWrite({ action: 'delete', id: editId });
-  if (dr && dr.error) throw new Error(dr.error);
+  const res=await jsonpWrite({action:'delete',id:editId});
+  if(res&&res.error){toast('❌ '+res.error);return;}
   toast('🗑 Đã xoá');
   closeModal();
   await syncData();
 }
 
 // ── RENDER ──
-function getFiltered() {
-  return data.filter(d => {
-    return (activeCh === 'all' || d.channel === activeCh)
-      && (activeSt.size === 0 || activeSt.has(d.status))
-      && (!q || d.content.toLowerCase().includes(q) || d.name.toLowerCase().includes(q));
-  });
+function getFiltered(){
+  return data.filter(d=>
+    (activeCh==='all'||d.channel===activeCh)&&
+    (activeSt.size===0||activeSt.has(d.status))&&
+    (!q||d.content.toLowerCase().includes(q)||d.name.toLowerCase().includes(q))
+  );
 }
+function renderAll(rows){renderStats(rows);if(view==='kanban')renderKanban();else renderList();}
 
-function renderAll(rows) {
-  renderStats(rows);
-  if (view === 'kanban') renderKanban();
-  else renderList();
-}
-
-function renderStats(rows) {
-  const total = rows.length;
-  const dang  = rows.filter(d => d.status === 'Đã đăng').length;
-  const chua  = rows.filter(d => d.status === 'Chưa đăng').length;
-  const san   = rows.filter(d => d.channel === 'San Studio Busan').length;
-  const ss    = rows.filter(d => d.channel === 'Ssanghy hanbok').length;
-  const pct   = total > 0 ? Math.round(dang/total*100) : 0;
-  document.getElementById('stats').innerHTML = `
-    <div class="stat"><div class="stat-label">Tổng video</div><div class="stat-val">${total}</div><div class="stat-sub">trên Google Sheets</div></div>
+function renderStats(rows){
+  const total=rows.length,dang=rows.filter(d=>d.status==='Đã đăng').length,chua=rows.filter(d=>d.status==='Chưa đăng').length;
+  const san=rows.filter(d=>d.channel==='San Studio Busan').length,ss=rows.filter(d=>d.channel==='Ssanghy hanbok').length;
+  const pct=total>0?Math.round(dang/total*100):0;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="stat-label">Tổng video</div><div class="stat-val">${total}</div><div class="stat-sub">Google Sheets</div></div>
     <div class="stat"><div class="stat-label">Đã đăng</div><div class="stat-val" style="color:var(--green)">${dang}</div><div class="stat-sub"><div class="prog"><div class="prog-fill" style="width:${pct}%"></div></div></div></div>
-    <div class="stat"><div class="stat-label">Chưa đăng</div><div class="stat-val" style="color:var(--red)">${chua}</div><div class="stat-sub">${chua} video đang chờ</div></div>
-    <div class="stat"><div class="stat-label">Theo kênh</div><div class="stat-val">2</div><div class="stat-sub"><span style="color:#b05510">San ${san}</span> · <span style="color:var(--red)">SS ${ss}</span></div></div>
-  `;
+    <div class="stat"><div class="stat-label">Chưa đăng</div><div class="stat-val" style="color:var(--red)">${chua}</div><div class="stat-sub">${chua} đang chờ</div></div>
+    <div class="stat"><div class="stat-label">Theo kênh</div><div class="stat-val">2</div><div class="stat-sub"><span style="color:#b05510">San ${san}</span> · <span style="color:var(--red)">SS ${ss}</span></div></div>`;
 }
+function chBadge(ch){return ch==='San Studio Busan'?'<span class="card-ch ch-san">📸 San Studio</span>':'<span class="card-ch ch-ss">👘 Ssanghy</span>';}
+function fmtDate(ts){if(!ts)return'';try{return new Date(ts).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'});}catch(e){return'';}}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function mkCard(d,i){return`<div class="card" style="animation-delay:${i*20}ms" onclick="editItem('${d.id}')">${chBadge(d.channel)}<div class="card-body">${esc(d.content)}</div><div class="card-foot"><span class="card-name">${esc(d.name)||'—'}</span><span class="card-ts">${fmtDate(d.timestamp)}</span><span class="badge ${d.status==='Đã đăng'?'bd':'bc'}">${d.status}</span></div></div>`;}
 
-function chBadge(ch) {
-  return ch === 'San Studio Busan'
-    ? '<span class="card-ch ch-san">📸 San Studio</span>'
-    : '<span class="card-ch ch-ss">👘 Ssanghy</span>';
+function renderKanban(){
+  const f=getFiltered(),dang=f.filter(d=>d.status==='Đã đăng'),chua=f.filter(d=>d.status==='Chưa đăng');
+  const col=(title,cls,arr)=>`<div class="col"><div class="col-head"><span class="col-title">${title}</span><span class="col-n ${cls}">${arr.length}</span></div>${arr.length?arr.map(mkCard).join(''):'<div class="empty">Không có video nào</div>'}</div>`;
+  document.getElementById('kanban').innerHTML=col('Đã đăng','d',dang)+col('Chưa đăng','c',chua);
 }
-function fmtDate(ts) {
-  if (!ts) return '';
-  try { return new Date(ts).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit'}); } catch(e){return '';}
-}
-function esc(s) {
-  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function mkCard(d, i) {
-  return `<div class="card" style="animation-delay:${i*20}ms" onclick="editItem('${d.id}')">
-    ${chBadge(d.channel)}
-    <div class="card-body">${esc(d.content)}</div>
-    <div class="card-foot">
-      <span class="card-name">${esc(d.name)||'—'}</span>
-      <span class="card-ts">${fmtDate(d.timestamp)}</span>
-      <span class="badge ${d.status==='Đã đăng'?'bd':'bc'}">${d.status}</span>
-    </div>
-  </div>`;
-}
-
-function renderKanban() {
-  const f    = getFiltered();
-  const dang = f.filter(d => d.status === 'Đã đăng');
-  const chua = f.filter(d => d.status === 'Chưa đăng');
-  const col  = (title, cls, arr) => `
-    <div class="col">
-      <div class="col-head">
-        <span class="col-title">${title}</span>
-        <span class="col-n ${cls}">${arr.length}</span>
-      </div>
-      ${arr.length ? arr.map(mkCard).join('') : '<div class="empty">Không có video nào</div>'}
-    </div>`;
-  document.getElementById('kanban').innerHTML = col('Đã đăng','d',dang) + col('Chưa đăng','c',chua);
-}
-
-function renderList() {
-  const f = getFiltered();
-  document.getElementById('listV').innerHTML = f.length ? `
-    <div class="list-wrap"><table>
-      <thead><tr><th>Khách hàng</th><th>Kênh</th><th>Nội dung</th><th>Trạng thái</th><th>Ngày</th><th></th></tr></thead>
-      <tbody>${f.map(d=>`<tr>
-        <td>${esc(d.name)||'<span style="color:var(--text4)">—</span>'}</td>
-        <td>${chBadge(d.channel)}</td>
-        <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.content)}</td>
-        <td><span class="badge ${d.status==='Đã đăng'?'bd':'bc'}">${d.status}</span></td>
-        <td style="font-size:11px;color:var(--text3)">${fmtDate(d.timestamp)}</td>
-        <td><button class="btn btn-sm" onclick="editItem('${d.id}')">✏️</button></td>
-      </tr>`).join('')}</tbody>
-    </table></div>`
-  : '<div class="empty" style="padding:48px">Không tìm thấy nội dung nào</div>';
+function renderList(){
+  const f=getFiltered();
+  document.getElementById('listV').innerHTML=f.length?`<div class="list-wrap"><table><thead><tr><th>Khách hàng</th><th>Kênh</th><th>Nội dung</th><th>Trạng thái</th><th>Ngày</th><th></th></tr></thead><tbody>${f.map(d=>`<tr><td>${esc(d.name)||'<span style="color:var(--text4)">—</span>'}</td><td>${chBadge(d.channel)}</td><td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(d.content)}</td><td><span class="badge ${d.status==='Đã đăng'?'bd':'bc'}">${d.status}</span></td><td style="font-size:11px;color:var(--text3)">${fmtDate(d.timestamp)}</td><td><button class="btn btn-sm" onclick="editItem('${d.id}')">✏️</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty" style="padding:48px">Không tìm thấy nội dung nào</div>';
 }
 
 // ── MODAL ──
-function openModal() {
-  editId = null;
-  document.getElementById('modalTitle').textContent = 'Thêm nội dung mới';
-  document.getElementById('fName').value    = '';
-  document.getElementById('fContent').value = '';
-  document.getElementById('fCh').value      = 'San Studio Busan';
-  document.getElementById('fSt').value      = 'Chưa đăng';
-  document.getElementById('delBtn').style.display = 'none';
+function openModal(){
+  editId=null;
+  document.getElementById('modalTitle').textContent='Thêm nội dung mới';
+  document.getElementById('fName').value='';
+  document.getElementById('fContent').value='';
+  document.getElementById('fCh').value='San Studio Busan';
+  document.getElementById('fSt').value='Chưa đăng';
+  document.getElementById('delBtn').style.display='none';
   showOverlay();
-  setTimeout(() => document.getElementById('fContent').focus(), 300);
+  setTimeout(()=>document.getElementById('fContent').focus(),350);
 }
-function editItem(id) {
-  const d = data.find(x => x.id === id);
-  if (!d) return;
-  editId = id;
-  document.getElementById('modalTitle').textContent = 'Chỉnh sửa nội dung';
-  document.getElementById('fName').value    = d.name;
-  document.getElementById('fContent').value = d.content;
-  document.getElementById('fCh').value      = d.channel;
-  document.getElementById('fSt').value      = d.status;
-  document.getElementById('delBtn').style.display = 'inline-flex';
+function editItem(id){
+  const d=data.find(x=>x.id===id);if(!d)return;
+  editId=id;
+  document.getElementById('modalTitle').textContent='Chỉnh sửa nội dung';
+  document.getElementById('fName').value=d.name;
+  document.getElementById('fContent').value=d.content;
+  document.getElementById('fCh').value=d.channel;
+  document.getElementById('fSt').value=d.status;
+  document.getElementById('delBtn').style.display='inline-flex';
   showOverlay();
 }
-function showOverlay() {
-  const o = document.getElementById('overlay');
-  o.classList.add('open');
-  requestAnimationFrame(() => o.classList.add('show'));
-}
-function closeModal() {
-  const o = document.getElementById('overlay');
-  o.classList.remove('show');
-  setTimeout(() => o.classList.remove('open'), 200);
-}
+function showOverlay(){const o=document.getElementById('overlay');o.classList.add('open');requestAnimationFrame(()=>o.classList.add('show'));}
+function closeModal(){const o=document.getElementById('overlay');o.classList.remove('show');setTimeout(()=>o.classList.remove('open'),300);}
 
 // ── FILTERS ──
-function setCh(ch, el) {
-  activeCh = ch;
-  document.querySelectorAll('.chip[onclick^="setCh"]').forEach(c => c.classList.remove('on'));
-  el.classList.add('on');
-  renderAll(data);
-}
-function toggleSt(st, el) {
-  activeSt.has(st) ? activeSt.delete(st) : activeSt.add(st);
-  el.classList.toggle('on');
-  renderAll(data);
-}
-function onSearch(v) { q = v.toLowerCase(); renderAll(data); }
-function switchTab(v, el) {
-  view = v;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('kanban').style.display = v === 'kanban' ? 'grid' : 'none';
-  document.getElementById('listV').style.display  = v === 'list'   ? 'block' : 'none';
-  renderAll(data);
-}
+function setCh(ch,el){activeCh=ch;document.querySelectorAll('.chip[onclick^="setCh"]').forEach(c=>c.classList.remove('on'));el.classList.add('on');renderAll(data);}
+function toggleSt(st,el){activeSt.has(st)?activeSt.delete(st):activeSt.add(st);el.classList.toggle('on');renderAll(data);}
+function onSearch(v){q=v.toLowerCase();renderAll(data);}
+function switchTab(v,el){view=v;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.getElementById('kanban').style.display=v==='kanban'?'grid':'none';document.getElementById('listV').style.display=v==='list'?'block':'none';renderAll(data);}
 
 // ── HELPERS ──
-function setSyncStatus(state, msg) {
-  const dot = document.getElementById('dot');
-  dot.className = 'dot' + (state === 'syncing' ? ' syncing' : state === 'err' ? ' err' : '');
-  document.getElementById('syncMsg').textContent = msg;
-  document.getElementById('syncTime').textContent = state === 'ok' ? new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}) : '';
+function setSyncStatus(state,msg){
+  const dot=document.getElementById('dot');
+  dot.className='dot'+(state==='syncing'?' syncing':state==='err'?' err':'');
+  document.getElementById('syncMsg').textContent=msg;
+  document.getElementById('syncTime').textContent=state==='ok'?new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}):'';
 }
-function toast(msg, ms=2800) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), ms);
-}
+function toast(msg,ms=2800){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),ms);}
 </script>
 </body>
 </html>
